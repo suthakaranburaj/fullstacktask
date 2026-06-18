@@ -1,6 +1,10 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import { PencilLine, Search, ShieldCheck, Tags, Trash2, Zap } from 'lucide-react';
 import { SectionHeading } from '@/components/common/section-heading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { defaultTransition, fadeUp, staggerContainer } from '@/lib/motion';
 
 const features = [
   {
@@ -39,26 +43,42 @@ export function FeaturesSection() {
   return (
     <section id="features" className="section-alt py-20 sm:py-24">
       <div className="mx-auto max-w-6xl space-y-12 px-4 sm:px-6">
-        <SectionHeading
-          eyebrow="Features"
-          title="Everything you need to manage notes beautifully"
-          description="Simple tools that help you capture, organize, and revisit your thoughts without friction."
-        />
+        <motion.div
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, margin: '-80px' }}
+          variants={fadeUp}
+          transition={defaultTransition}
+        >
+          <SectionHeading
+            eyebrow="Features"
+            title="Everything you need to manage notes beautifully"
+            description="Simple tools that help you capture, organize, and revisit your thoughts without friction."
+          />
+        </motion.div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <motion.div
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, margin: '-60px' }}
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {features.map((feature) => (
-            <Card key={feature.title} className="transition-shadow hover:shadow-md">
-              <CardHeader>
-                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <feature.icon className="h-5 w-5" aria-hidden />
-                </div>
-                <CardTitle>{feature.title}</CardTitle>
-                <CardDescription>{feature.description}</CardDescription>
-              </CardHeader>
-              <CardContent />
-            </Card>
+            <motion.div key={feature.title} variants={fadeUp} transition={defaultTransition}>
+              <Card className="h-full transition-shadow hover:shadow-md">
+                <CardHeader>
+                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <feature.icon className="h-5 w-5" aria-hidden />
+                  </div>
+                  <CardTitle>{feature.title}</CardTitle>
+                  <CardDescription>{feature.description}</CardDescription>
+                </CardHeader>
+                <CardContent />
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

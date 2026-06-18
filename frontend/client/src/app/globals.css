@@ -142,4 +142,20 @@
   .note-content a {
     @apply text-primary underline;
   }
+
+  .reactour-theme-aware [data-tour-elem='dot'] {
+    @apply opacity-40;
+  }
+
+  .reactour-theme-aware [data-tour-elem='dot'][aria-current='step'] {
+    @apply opacity-100;
+  }
+
+  .dark .reactour-theme-aware [data-tour-elem='dot'] {
+    background: hsl(var(--muted-foreground));
+  }
+
+  .dark .reactour-theme-aware [data-tour-elem='dot'][aria-current='step'] {
+    background: hsl(var(--primary));
+  }
 }

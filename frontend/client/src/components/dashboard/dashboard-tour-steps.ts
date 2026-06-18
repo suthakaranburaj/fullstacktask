@@ -7,7 +7,11 @@ export const dashboardTourSteps: StepType[] = [
   },
   {
     selector: '[data-tour="search-notes"]',
-    content: 'Search across all your notes by title or content in real time.',
+    content: 'Search notes with debounce — results update shortly after you stop typing.',
+  },
+  {
+    selector: '[data-tour="tag-filter"]',
+    content: 'Filter notes by badge tags to focus on a specific category.',
   },
   {
     selector: '[data-tour="create-note"]',

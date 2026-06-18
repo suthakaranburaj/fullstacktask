@@ -1,12 +1,11 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { Pin, PinOff, Pencil, Trash2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatNoteDate, formatRelativeDate, getNotePreview } from '@/lib/note-utils';
 import type { Note } from '@/modules/notes/notes.types';
 import { cn } from '@/lib/utils';
+import { fadeUp } from '@/lib/motion';
 
 interface NoteCardProps {
   note: Note;
@@ -28,62 +27,59 @@ export function NoteCard({
   onTogglePin,
 }: NoteCardProps) {
   return (
-    <Card
+    <motion.article
+      layout
+      variants={fadeUp}
+      transition={{ duration: 0.3 }}
       className={cn(
-        'cursor-pointer transition-all hover:shadow-md',
-        isSelected && 'border-primary ring-2 ring-primary/20'
+        'group flex items-center gap-3 rounded-xl border bg-card/80 px-3 py-2.5 shadow-sm backdrop-blur-sm transition-all hover:border-primary/30 hover:shadow-md',
+        isSelected && 'border-primary bg-primary/5 ring-2 ring-primary/20'
       )}
       onClick={() => onSelect(note)}
     >
-      <CardHeader className="space-y-3 pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <CardTitle className="line-clamp-2 text-base">{note.title}</CardTitle>
-          {note.isPinned ? <Badge variant="accent">Pinned</Badge> : null}
-        </div>
-        <p className="line-clamp-3 text-sm text-muted-foreground">{getNotePreview(note)}</p>
-      </CardHeader>
+      <div className="flex w-5 shrink-0 justify-center">
+        {note.isPinned ? (
+          <Pin className="h-4 w-4 fill-accent text-accent" aria-label="Pinned" />
+        ) : (
+          <Pin className="h-4 w-4 text-muted-foreground/30" aria-hidden />
+        )}
+      </div>
 
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-          <span>Updated {formatRelativeDate(note.updatedAt)}</span>
-          <span>•</span>
-          <span>{formatNoteDate(note.createdAt)}</span>
-        </div>
+      <h3 className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">{note.title}</h3>
 
-        {note.tags.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {note.tags.map((tag) => (
-              <Badge key={tag} variant="secondary">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        ) : null}
-
-        <div
-          className="flex flex-wrap gap-2"
-          data-tour={showTourAnchor ? 'note-actions' : undefined}
-          onClick={(event) => event.stopPropagation()}
+      <div
+        className="flex shrink-0 items-center gap-0.5 opacity-80 transition-opacity group-hover:opacity-100"
+        data-tour={showTourAnchor ? 'note-actions' : undefined}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => onTogglePin(note)}
+          aria-label={note.isPinned ? 'Unpin note' : 'Pin note'}
         >
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onTogglePin(note)}
-            aria-label={note.isPinned ? 'Unpin note' : 'Pin note'}
-          >
-            {note.isPinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
-            {note.isPinned ? 'Unpin' : 'Pin'}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onEdit(note)}>
-            <Pencil className="h-4 w-4" />
-            Edit
-          </Button>
-          <Button variant="destructive" size="sm" onClick={() => onDelete(note)}>
-            <Trash2 className="h-4 w-4" />
-            Delete
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          {note.isPinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => onEdit(note)}
+          aria-label="Edit note"
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          onClick={() => onDelete(note)}
+          aria-label="Delete note"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+    </motion.article>
   );
 }

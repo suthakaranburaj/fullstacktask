@@ -1,4 +1,8 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import { SectionHeading } from '@/components/common/section-heading';
+import { defaultTransition, fadeUp, staggerContainer } from '@/lib/motion';
 
 const steps = [
   {
@@ -22,21 +26,41 @@ export function HowItWorksSection() {
   return (
     <section id="how-it-works" className="py-20 sm:py-24">
       <div className="mx-auto max-w-6xl space-y-12 px-4 sm:px-6">
-        <SectionHeading
-          eyebrow="How it works"
-          title="From blank page to organized clarity in minutes"
-          description="NoteNest keeps the flow simple so you can spend more time thinking and less time managing."
-        />
+        <motion.div
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, margin: '-80px' }}
+          variants={fadeUp}
+          transition={defaultTransition}
+        >
+          <SectionHeading
+            eyebrow="How it works"
+            title="From blank page to organized clarity in minutes"
+            description="NoteNest keeps the flow simple so you can spend more time thinking and less time managing."
+          />
+        </motion.div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <motion.div
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, margin: '-60px' }}
+          className="grid gap-6 md:grid-cols-3"
+        >
           {steps.map((item) => (
-            <div key={item.step} className="rounded-xl border bg-card p-6 shadow-sm">
+            <motion.div
+              key={item.step}
+              variants={fadeUp}
+              transition={defaultTransition}
+              whileHover={{ y: -4 }}
+              className="rounded-xl border bg-card p-6 shadow-sm"
+            >
               <p className="text-sm font-semibold text-primary">{item.step}</p>
               <h3 className="mt-3 text-xl font-semibold">{item.title}</h3>
               <p className="mt-2 text-muted-foreground">{item.description}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
