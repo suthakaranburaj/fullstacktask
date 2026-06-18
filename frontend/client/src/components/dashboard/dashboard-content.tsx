@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { Loader2, Plus, Search, Sparkles } from 'lucide-react';
 import { useTour } from '@reactour/tour';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { DashboardTourProvider } from '@/components/dashboard/dashboard-tour';
@@ -9,9 +10,12 @@ import { DeleteNoteDialog } from '@/components/dashboard/delete-note-dialog';
 import { NoteCard } from '@/components/dashboard/note-card';
 import { NoteDetailPanel } from '@/components/dashboard/note-detail-panel';
 import { NoteFormDialog } from '@/components/dashboard/note-form-dialog';
+import { TagFilterDropdown } from '@/components/dashboard/tag-filter-dropdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useDebounce } from '@/hooks/use-debounce';
 import { ApiError } from '@/lib/api-error';
+import { fadeUp, staggerContainer } from '@/lib/motion';
 import {
   createNote,
   deleteNote,
@@ -26,7 +30,8 @@ function DashboardBody() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 400);
+  const [selectedTag, setSelectedTag] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -36,6 +41,8 @@ function DashboardBody() {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+
+  const isSearching = search !== debouncedSearch;
 
   const loadNotes = useCallback(async (query?: string) => {
     setIsLoading(true);
@@ -57,13 +64,19 @@ function DashboardBody() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 350);
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  useEffect(() => {
     void loadNotes(debouncedSearch);
   }, [debouncedSearch, loadNotes]);
+
+  const availableTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    notes.forEach((note) => note.tags.forEach((tag) => tagSet.add(tag)));
+    return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+  }, [notes]);
+
+  const filteredNotes = useMemo(() => {
+    if (!selectedTag) return notes;
+    return notes.filter((note) => note.tags.includes(selectedTag));
+  }, [notes, selectedTag]);
 
   const openCreateDialog = () => {
     setFormMode('create');
@@ -144,70 +157,105 @@ function DashboardBody() {
       <DashboardHeader />
 
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full sm:max-w-md" data-tour="search-notes">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search notes by title or content..."
-              className="pl-9"
-            />
-          </div>
+        <motion.div
+          {...fadeUp}
+          className="rounded-2xl border bg-card/70 p-4 shadow-sm backdrop-blur-md sm:p-5"
+        >
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative flex-1 sm:max-w-md" data-tour="search-notes">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search notes by title or content..."
+                  className="bg-background/80 pl-9"
+                />
+                {isSearching ? (
+                  <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+                ) : null}
+              </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => setIsOpen(true)}>
-              Replay tour
-            </Button>
-            <Button data-tour="create-note" onClick={openCreateDialog}>
-              <Plus className="h-4 w-4" />
-              Create note
-            </Button>
+              <TagFilterDropdown
+                tags={availableTags}
+                value={selectedTag}
+                onChange={setSelectedTag}
+                className="sm:max-w-[200px]"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => setIsOpen(true)}>
+                <Sparkles className="h-4 w-4" />
+                Replay tour
+              </Button>
+              <Button data-tour="create-note" onClick={openCreateDialog}>
+                <Plus className="h-4 w-4" />
+                Create note
+              </Button>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         {error ? (
-          <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <motion.p
+            {...fadeUp}
+            className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
             {error}
-          </p>
+          </motion.p>
         ) : null}
 
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <section data-tour="notes-list" className="space-y-4">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+          <section data-tour="notes-list" className="space-y-2">
+            <div className="mb-2 flex items-center justify-between px-1">
+              <p className="text-sm font-medium text-muted-foreground">
+                {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
+              </p>
+              {(debouncedSearch || selectedTag) && (
+                <p className="text-xs text-muted-foreground">Filtered results</p>
+              )}
+            </div>
+
             {isLoading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <div key={index} className="h-40 animate-pulse rounded-xl border bg-card" />
+              <div className="space-y-2">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <div key={index} className="h-12 animate-pulse rounded-xl border bg-card/60" />
                 ))}
               </div>
-            ) : notes.length === 0 ? (
-              <div className="rounded-xl border border-dashed bg-card p-10 text-center">
-                <p className="font-medium">No notes yet</p>
+            ) : filteredNotes.length === 0 ? (
+              <motion.div
+                {...fadeUp}
+                className="rounded-xl border border-dashed bg-card/70 p-10 text-center backdrop-blur-sm"
+              >
+                <p className="font-medium">No notes found</p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {debouncedSearch
-                    ? 'No notes match your search. Try a different keyword.'
+                  {debouncedSearch || selectedTag
+                    ? 'Try adjusting your search or badge filter.'
                     : 'Create your first note to get started.'}
                 </p>
-                {!debouncedSearch ? (
+                {!debouncedSearch && !selectedTag ? (
                   <Button className="mt-4" onClick={openCreateDialog}>
                     <Plus className="h-4 w-4" />
                     Create your first note
                   </Button>
                 ) : null}
-              </div>
+              </motion.div>
             ) : (
-              notes.map((note, index) => (
-                <NoteCard
-                  key={note.id}
-                  note={note}
-                  isSelected={selectedNote?.id === note.id}
-                  showTourAnchor={index === 0}
-                  onSelect={setSelectedNote}
-                  onEdit={openEditDialog}
-                  onDelete={openDeleteDialog}
-                  onTogglePin={handleTogglePin}
-                />
-              ))
+              <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-2">
+                {filteredNotes.map((note, index) => (
+                  <NoteCard
+                    key={note.id}
+                    note={note}
+                    isSelected={selectedNote?.id === note.id}
+                    showTourAnchor={index === 0}
+                    onSelect={setSelectedNote}
+                    onEdit={openEditDialog}
+                    onDelete={openDeleteDialog}
+                    onTogglePin={handleTogglePin}
+                  />
+                ))}
+              </motion.div>
             )}
           </section>
 
