@@ -26,7 +26,6 @@ const authTokenSchema = new Schema<IAuthTokenDocument>(
     expiresAt: {
       type: Date,
       required: [true, 'Expiry date is required'],
-      index: true,
     },
     isRevoked: {
       type: Boolean,
