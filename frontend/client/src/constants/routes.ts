@@ -1,5 +1,7 @@
 export const routes = {
   home: '/',
+  login: '/login',
+  dashboard: '/dashboard',
   maintenance: '/maintenance',
   offline: '/offline',
   unauthorized: '/error/401',
