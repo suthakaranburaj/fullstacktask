@@ -17,6 +17,8 @@ export interface INote {
   isPinned: boolean;
   tags: string[];
   collaborators: ICollaborator[];
+  shareToken: string | null;
+  isLinkShareEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { apiConfig } from '@/constants/app';
 import { useAuth } from '@/providers/auth-provider';
@@ -8,6 +9,7 @@ import { ApiError } from '@/lib/api-error';
 
 export function GoogleSignInButton() {
   const { loginWithGoogle } = useAuth();
+  const searchParams = useSearchParams();
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -21,7 +23,11 @@ export function GoogleSignInButton() {
     setIsSubmitting(true);
 
     try {
-      await loginWithGoogle(response.credential);
+      const redirect = searchParams.get('redirect');
+      await loginWithGoogle(
+        response.credential,
+        redirect ? decodeURIComponent(redirect) : undefined
+      );
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'Unable to sign in with Google.';
       setError(message);

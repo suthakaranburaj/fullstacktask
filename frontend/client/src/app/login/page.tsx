@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { NotebookPen } from 'lucide-react';
 import { GuestGuard } from '@/components/auth/guest-guard';
 import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   title: 'Sign in',
 };
 
-export default function LoginPage() {
+function LoginContent() {
   return (
     <GuestGuard>
       <div className="relative min-h-screen hero-gradient">
@@ -27,7 +28,7 @@ export default function LoginPage() {
               </span>
               <h1 className="text-2xl font-bold tracking-tight">Welcome to {siteConfig.name}</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Sign in with Google to access your personal notes dashboard.
+                Sign in with Google to access your notes or view a shared note.
               </p>
             </div>
 
@@ -46,5 +47,19 @@ export default function LoginPage() {
         </div>
       </div>
     </GuestGuard>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center hero-gradient">
+          <p className="text-sm text-muted-foreground">Loading sign in...</p>
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }

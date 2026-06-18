@@ -7,7 +7,11 @@ const notesRouter = Router();
 notesRouter.use(protect);
 
 notesRouter.post('/', notesController.createNote);
+notesRouter.get('/shared/:token', notesController.getSharedNote);
 notesRouter.get('/', notesController.getNotes);
+notesRouter.get('/:id/share', notesController.getShareMeta);
+notesRouter.post('/:id/share/users', notesController.shareWithUsers);
+notesRouter.post('/:id/share/link', notesController.toggleLinkShare);
 notesRouter.get('/:id', notesController.getNoteById);
 notesRouter.put('/:id', notesController.updateNote);
 notesRouter.delete('/:id', notesController.deleteNote);

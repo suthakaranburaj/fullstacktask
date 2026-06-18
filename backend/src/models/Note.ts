@@ -68,6 +68,17 @@ const noteSchema = new Schema<INoteDocument>(
       type: [collaboratorSchema],
       default: [],
     },
+    shareToken: {
+      type: String,
+      default: null,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
+    isLinkShareEnabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -14,7 +14,7 @@ interface NoteDetailPanelProps {
 
 export function NoteDetailPanel({ note }: NoteDetailPanelProps) {
   return (
-    <Card className="sticky top-20 hidden min-h-[520px] overflow-hidden border-primary/10 bg-card/90 shadow-lg backdrop-blur-sm lg:block">
+    <Card className="sticky top-20 hidden min-h-[450px] overflow-hidden border-primary/10 bg-card/90 shadow-lg backdrop-blur-sm lg:block">
       <AnimatePresence mode="wait">
         {!note ? (
           <motion.div

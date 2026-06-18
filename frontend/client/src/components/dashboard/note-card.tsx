@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Pin, PinOff, Pencil, Trash2 } from 'lucide-react';
+import { Pin, Pencil, Share2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Note } from '@/modules/notes/notes.types';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,7 @@ interface NoteCardProps {
   onEdit: (note: Note) => void;
   onDelete: (note: Note) => void;
   onTogglePin: (note: Note) => void;
+  onShare: (note: Note) => void;
 }
 
 export function NoteCard({
@@ -25,6 +26,7 @@ export function NoteCard({
   onEdit,
   onDelete,
   onTogglePin,
+  onShare,
 }: NoteCardProps) {
   return (
     <motion.article
@@ -37,15 +39,23 @@ export function NoteCard({
       )}
       onClick={() => onSelect(note)}
     >
-      <div className="flex w-5 shrink-0 justify-center">
+      <button
+        type="button"
+        className="flex w-4 shrink-0 justify-center rounded-sm transition-colors hover:bg-muted/60"
+        onClick={(event) => {
+          event.stopPropagation();
+          onTogglePin(note);
+        }}
+        aria-label={note.isPinned ? 'Unpin note' : 'Pin note'}
+      >
         {note.isPinned ? (
-          <Pin className="h-4 w-4 fill-accent text-accent" aria-label="Pinned" />
+          <Pin className="h-3.5 w-3.5 fill-accent text-accent" />
         ) : (
-          <Pin className="h-4 w-4 text-muted-foreground/30" aria-hidden />
+          <Pin className="h-3.5 w-3.5 text-muted-foreground/40" />
         )}
-      </div>
+      </button>
 
-      <h3 className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">{note.title}</h3>
+      <h3 className="min-w-0 flex-1 truncate text-sm font-medium leading-tight">{note.title}</h3>
 
       <div
         className="flex shrink-0 items-center gap-0.5 opacity-80 transition-opacity group-hover:opacity-100"
@@ -55,29 +65,29 @@ export function NoteCard({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
-          onClick={() => onTogglePin(note)}
-          aria-label={note.isPinned ? 'Unpin note' : 'Pin note'}
+          className="h-6 w-6"
+          onClick={() => onShare(note)}
+          aria-label="Share note"
         >
-          {note.isPinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+          <Share2 className="h-3.5 w-3.5" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
+          className="h-6 w-6"
           onClick={() => onEdit(note)}
           aria-label="Edit note"
         >
-          <Pencil className="h-4 w-4" />
+          <Pencil className="h-3.5 w-3.5" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="h-6 w-6 text-destructive hover:bg-destructive/10 hover:text-destructive"
           onClick={() => onDelete(note)}
           aria-label="Delete note"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>
     </motion.article>

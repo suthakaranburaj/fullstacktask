@@ -1,19 +1,21 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { routes } from '@/constants/routes';
 import { useAuth } from '@/providers/auth-provider';
 
 export function GuestGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace(routes.dashboard);
+      const redirect = searchParams.get('redirect');
+      router.replace(redirect ? decodeURIComponent(redirect) : routes.dashboard);
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, router, searchParams]);
 
   if (isLoading) {
     return (

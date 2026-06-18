@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { asyncHandler, respond } from '../../../utils';
 import * as notesService from './notes.service';
-import { CreateNoteBody, NoteQuery, UpdateNoteBody } from './notes.types';
+import * as shareService from './notes.share.service';
+import { CreateNoteBody, NoteQuery, ShareUsersBody, ToggleLinkShareBody, UpdateNoteBody } from './notes.types';
 
 function getRouteParam(value: string | string[]): string {
   return Array.isArray(value) ? value[0] : value;
@@ -54,5 +55,57 @@ export const deleteNote = asyncHandler(async (req: Request, res: Response) => {
     res,
     message: 'Note deleted successfully',
     data: null,
+  });
+});
+
+export const getSharedNote = asyncHandler(async (req: Request, res: Response) => {
+  const note = await shareService.getSharedNoteByToken(
+    getRouteParam(req.params.token),
+    req.user!.id
+  );
+
+  return respond.success({
+    res,
+    message: 'Shared note fetched successfully',
+    data: note,
+  });
+});
+
+export const getShareMeta = asyncHandler(async (req: Request, res: Response) => {
+  const meta = await shareService.getShareMeta(getRouteParam(req.params.id), req.user!.id);
+
+  return respond.success({
+    res,
+    message: 'Share details fetched successfully',
+    data: meta,
+  });
+});
+
+export const shareWithUsers = asyncHandler(async (req: Request, res: Response) => {
+  const meta = await shareService.shareNoteWithUsers(
+    getRouteParam(req.params.id),
+    req.user!.id,
+    req.body as ShareUsersBody
+  );
+
+  return respond.success({
+    res,
+    message: 'Note shared with selected users',
+    data: meta,
+  });
+});
+
+export const toggleLinkShare = asyncHandler(async (req: Request, res: Response) => {
+  const { enabled } = req.body as ToggleLinkShareBody;
+  const result = await shareService.toggleLinkShare(
+    getRouteParam(req.params.id),
+    req.user!.id,
+    Boolean(enabled)
+  );
+
+  return respond.success({
+    res,
+    message: enabled ? 'Link sharing enabled' : 'Link sharing disabled',
+    data: result,
   });
 });

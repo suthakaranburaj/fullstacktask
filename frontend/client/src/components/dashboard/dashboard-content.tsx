@@ -10,6 +10,7 @@ import { DeleteNoteDialog } from '@/components/dashboard/delete-note-dialog';
 import { NoteCard } from '@/components/dashboard/note-card';
 import { NoteDetailPanel } from '@/components/dashboard/note-detail-panel';
 import { NoteFormDialog } from '@/components/dashboard/note-form-dialog';
+import { ShareNoteDialog } from '@/components/dashboard/share-note-dialog';
 import { TagFilterDropdown } from '@/components/dashboard/tag-filter-dropdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,8 @@ function DashboardBody() {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [noteToShare, setNoteToShare] = useState<Note | null>(null);
 
   const isSearching = search !== debouncedSearch;
 
@@ -93,6 +96,11 @@ function DashboardBody() {
   const openDeleteDialog = (note: Note) => {
     setNoteToDelete(note);
     setDeleteOpen(true);
+  };
+
+  const openShareDialog = (note: Note) => {
+    setNoteToShare(note);
+    setShareOpen(true);
   };
 
   const handleCreateOrUpdate = async (payload: CreateNoteInput | UpdateNoteInput) => {
@@ -220,7 +228,7 @@ function DashboardBody() {
             {isLoading ? (
               <div className="space-y-2">
                 {Array.from({ length: 5 }).map((_, index) => (
-                  <div key={index} className="h-12 animate-pulse rounded-xl border bg-card/60" />
+                  <div key={index} className="h-10 animate-pulse rounded-lg border bg-card/60" />
                 ))}
               </div>
             ) : filteredNotes.length === 0 ? (
@@ -250,10 +258,11 @@ function DashboardBody() {
                     isSelected={selectedNote?.id === note.id}
                     showTourAnchor={index === 0}
                     onSelect={setSelectedNote}
-                    onEdit={openEditDialog}
-                    onDelete={openDeleteDialog}
-                    onTogglePin={handleTogglePin}
-                  />
+                  onEdit={openEditDialog}
+                  onDelete={openDeleteDialog}
+                  onTogglePin={handleTogglePin}
+                  onShare={openShareDialog}
+                />
                 ))}
               </motion.div>
             )}
@@ -279,6 +288,8 @@ function DashboardBody() {
         onOpenChange={setDeleteOpen}
         onConfirm={handleDelete}
       />
+
+      <ShareNoteDialog note={noteToShare} open={shareOpen} onOpenChange={setShareOpen} />
     </div>
   );
 }

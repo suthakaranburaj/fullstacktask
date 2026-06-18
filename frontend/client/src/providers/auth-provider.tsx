@@ -23,7 +23,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  loginWithGoogle: (idToken: string) => Promise<void>;
+  loginWithGoogle: (idToken: string, redirectTo?: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -57,11 +57,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithGoogle = useCallback(
-    async (idToken: string) => {
+    async (idToken: string, redirectTo?: string) => {
       const session = await signInWithGoogle({ idToken });
       saveAuthSession(session.user, session.tokens.accessToken, session.tokens.refreshToken);
       setUser(session.user);
-      router.replace(routes.dashboard);
+      router.replace(redirectTo || routes.dashboard);
     },
     [router]
   );

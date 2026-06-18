@@ -7,6 +7,26 @@ export interface Note {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+  isLinkShareEnabled?: boolean;
+  shareUrl?: string | null;
+}
+
+export interface ShareCollaborator {
+  email: string;
+  name: string;
+  role: string;
+}
+
+export interface ShareMeta {
+  isLinkShareEnabled: boolean;
+  shareUrl: string | null;
+  collaborators: ShareCollaborator[];
+}
+
+export interface LinkShareResult {
+  isLinkShareEnabled: boolean;
+  shareUrl: string | null;
+  shareToken: string | null;
 }
 
 export interface CreateNoteInput {

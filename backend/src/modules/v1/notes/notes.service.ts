@@ -3,20 +3,11 @@ import { AppError } from '../../../errors/AppError';
 import { HttpStatus } from '../../../constants/httpStatus';
 import { Note } from '../../../models/Note';
 import { INoteDocument } from '../../../models/types/note.types';
+import { formatNote } from './notes.share.service';
 import { CreateNoteBody, NoteQuery, NoteResponse, UpdateNoteBody } from './notes.types';
 
-function formatNote(note: INoteDocument): NoteResponse {
-  const json = note.toJSON() as NoteResponse & { preview?: string };
-  return {
-    id: json.id,
-    title: json.title,
-    content: json.content,
-    preview: json.preview ?? '',
-    isPinned: json.isPinned,
-    tags: json.tags,
-    createdAt: json.createdAt,
-    updatedAt: json.updatedAt,
-  };
+function formatNoteForViewer(note: INoteDocument, viewerId: string): NoteResponse {
+  return formatNote(note, viewerId);
 }
 
 function buildAccessFilter(userId: string) {
@@ -53,7 +44,7 @@ export async function createNote(userId: string, body: CreateNoteBody): Promise<
     isPinned: body.isPinned ?? false,
   });
 
-  return formatNote(note);
+  return formatNoteForViewer(note, userId);
 }
 
 export async function getNotes(userId: string, query: NoteQuery): Promise<NoteResponse[]> {
@@ -78,7 +69,7 @@ export async function getNotes(userId: string, query: NoteQuery): Promise<NoteRe
 
   const notes = await Note.find(filter).sort({ isPinned: -1, updatedAt: -1 });
 
-  return notes.map(formatNote);
+  return notes.map((note) => formatNoteForViewer(note, userId));
 }
 
 export async function getNoteById(userId: string, noteId: string): Promise<NoteResponse> {
@@ -93,7 +84,7 @@ export async function getNoteById(userId: string, noteId: string): Promise<NoteR
     throw new AppError('Note not found', HttpStatus.NOT_FOUND);
   }
 
-  return formatNote(note);
+  return formatNoteForViewer(note, userId);
 }
 
 export async function updateNote(
@@ -130,7 +121,7 @@ export async function updateNote(
 
   await note.save();
 
-  return formatNote(note);
+  return formatNoteForViewer(note, userId);
 }
 
 export async function deleteNote(userId: string, noteId: string): Promise<void> {
