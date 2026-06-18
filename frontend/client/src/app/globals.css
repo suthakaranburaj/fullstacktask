@@ -81,4 +81,65 @@
   .section-alt {
     background-color: hsl(var(--section-alt));
   }
+
+  .rich-text-editor .ql-toolbar {
+    @apply rounded-t-md border-0 border-b bg-muted/40;
+  }
+
+  .rich-text-editor .ql-container {
+    @apply min-h-[180px] rounded-b-md border-0 text-sm;
+  }
+
+  .rich-text-editor .ql-editor {
+    @apply min-h-[180px];
+  }
+
+  .dark .rich-text-editor .ql-toolbar,
+  .dark .rich-text-editor .ql-container {
+    @apply text-foreground;
+  }
+
+  .dark .rich-text-editor .ql-stroke {
+    stroke: hsl(var(--foreground));
+  }
+
+  .dark .rich-text-editor .ql-fill {
+    fill: hsl(var(--foreground));
+  }
+
+  .dark .rich-text-editor .ql-picker {
+    color: hsl(var(--foreground));
+  }
+
+  .note-content p {
+    @apply mb-3;
+  }
+
+  .note-content h1 {
+    @apply mb-3 text-2xl font-bold;
+  }
+
+  .note-content h2 {
+    @apply mb-2 text-xl font-semibold;
+  }
+
+  .note-content h3 {
+    @apply mb-2 text-lg font-semibold;
+  }
+
+  .note-content ul {
+    @apply mb-3 list-disc pl-5;
+  }
+
+  .note-content ol {
+    @apply mb-3 list-decimal pl-5;
+  }
+
+  .note-content blockquote {
+    @apply my-3 border-l-4 border-primary/40 pl-4 italic text-muted-foreground;
+  }
+
+  .note-content a {
+    @apply text-primary underline;
+  }
 }
