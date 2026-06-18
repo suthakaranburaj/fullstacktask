@@ -3,7 +3,10 @@
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import { Loader2 } from 'lucide-react';
+import { RenderColdStartNotice } from '@/components/common/render-cold-start-notice';
 import { apiConfig } from '@/constants/app';
+import { useSlowLoadingNotice } from '@/hooks/use-slow-loading-notice';
 import { useAuth } from '@/providers/auth-provider';
 import { ApiError } from '@/lib/api-error';
 
@@ -12,6 +15,7 @@ export function GoogleSignInButton() {
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const showSlowNotice = useSlowLoadingNotice(isSubmitting);
 
   const handleSuccess = async (response: CredentialResponse) => {
     if (!response.credential) {
@@ -57,6 +61,15 @@ export function GoogleSignInButton() {
           width="320"
         />
       </div>
+
+      {isSubmitting ? (
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          Signing you in...
+        </div>
+      ) : null}
+
+      <RenderColdStartNotice show={showSlowNotice} />
 
       {error ? (
         <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">

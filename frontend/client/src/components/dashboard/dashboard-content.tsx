@@ -12,9 +12,11 @@ import { NoteDetailPanel } from '@/components/dashboard/note-detail-panel';
 import { NoteFormDialog } from '@/components/dashboard/note-form-dialog';
 import { ShareNoteDialog } from '@/components/dashboard/share-note-dialog';
 import { TagFilterDropdown } from '@/components/dashboard/tag-filter-dropdown';
+import { RenderColdStartNotice } from '@/components/common/render-cold-start-notice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useSlowLoadingNotice } from '@/hooks/use-slow-loading-notice';
 import { ApiError } from '@/lib/api-error';
 import { fadeUp, staggerContainer } from '@/lib/motion';
 import {
@@ -44,6 +46,7 @@ function DashboardBody() {
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [noteToShare, setNoteToShare] = useState<Note | null>(null);
+  const showSlowNotice = useSlowLoadingNotice(isLoading);
 
   const isSearching = search !== debouncedSearch;
 
@@ -226,10 +229,13 @@ function DashboardBody() {
             </div>
 
             {isLoading ? (
-              <div className="space-y-2">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <div key={index} className="h-10 animate-pulse rounded-lg border bg-card/60" />
-                ))}
+              <div className="space-y-3">
+                <RenderColdStartNotice show={showSlowNotice} />
+                <div className="space-y-2">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <div key={index} className="h-10 animate-pulse rounded-lg border bg-card/60" />
+                  ))}
+                </div>
               </div>
             ) : filteredNotes.length === 0 ? (
               <motion.div

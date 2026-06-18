@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { AuthLoadingScreen } from '@/components/common/auth-loading-screen';
 import { routes } from '@/constants/routes';
 import { useAuth } from '@/providers/auth-provider';
 
@@ -19,11 +20,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, isLoading, pathname, router, searchParams]);
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center hero-gradient">
-        <p className="text-sm text-muted-foreground">Loading your workspace...</p>
-      </div>
-    );
+    return <AuthLoadingScreen message="Loading your workspace..." />;
   }
 
   if (!isAuthenticated) {

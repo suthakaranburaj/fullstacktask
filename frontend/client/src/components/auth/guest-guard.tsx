@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { AuthLoadingScreen } from '@/components/common/auth-loading-screen';
 import { routes } from '@/constants/routes';
 import { useAuth } from '@/providers/auth-provider';
 
@@ -18,11 +19,7 @@ export function GuestGuard({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, isLoading, router, searchParams]);
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center hero-gradient">
-        <p className="text-sm text-muted-foreground">Checking your session...</p>
-      </div>
-    );
+    return <AuthLoadingScreen message="Checking your session..." />;
   }
 
   if (isAuthenticated) {

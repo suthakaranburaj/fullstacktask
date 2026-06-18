@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { NotebookPen } from 'lucide-react';
 import { GuestGuard } from '@/components/auth/guest-guard';
 import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
+import { LoginLoadingFallback } from '@/components/auth/login-loading-fallback';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { siteConfig } from '@/constants/site';
 import { routes } from '@/constants/routes';
@@ -52,13 +53,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center hero-gradient">
-          <p className="text-sm text-muted-foreground">Loading sign in...</p>
-        </div>
-      }
-    >
+    <Suspense fallback={<LoginLoadingFallback />}>
       <LoginContent />
     </Suspense>
   );
