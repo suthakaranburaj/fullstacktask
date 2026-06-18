@@ -30,7 +30,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button asChild size="sm" className="hidden sm:inline-flex">
-            <Link href="#cta">Start writing</Link>
+            <Link href="/login">Start writing</Link>
           </Button>
         </div>
       </div>

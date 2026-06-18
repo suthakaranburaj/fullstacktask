@@ -22,7 +22,7 @@ export function HeroSection() {
 
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link href="#cta">
+              <Link href="/login">
                 Get started free
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
