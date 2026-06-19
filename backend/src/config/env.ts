@@ -18,6 +18,11 @@ export const env = {
   apiVersion: process.env.API_VERSION ?? 'v1',
   baseUrl: requireEnv('BASE_URL'),
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3001',
+  shareLinkBaseUrl: (
+    process.env.SHARE_LINK_BASE_URL ??
+    process.env.FRONTEND_URL ??
+    'http://localhost:3001'
+  ).replace(/\/$/, ''),
   mongodbUri: requireEnv('MONGODB_URI'),
   cors: {
     origins: (process.env.CORS_ORIGINS ?? 'http://localhost:3000,http://localhost:3001')

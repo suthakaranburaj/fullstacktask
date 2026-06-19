@@ -20,7 +20,7 @@ function generateShareToken(): string {
 
 function buildShareUrl(token: string | null): string | null {
   if (!token) return null;
-  return `${env.frontendUrl}/shared/${token}`;
+  return `${env.shareLinkBaseUrl}/shared/${token}`;
 }
 
 function formatNote(note: INoteDocument, viewerId?: string): NoteResponse {
